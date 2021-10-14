@@ -1,7 +1,9 @@
+import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from animals import get_all_animals, get_single_animal
+from animals import get_all_animals, get_single_animal, create_animal
 from employees import get_all_employees, get_single_employee
-from locations.request import get_all_locations, get_single_location
+from employees.request import create_employee
+from locations.request import create_location, get_all_locations, get_single_location
 
 
 # Here's a class. It inherits from another class.
@@ -63,7 +65,7 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = f"{get_single_employee(id)}"
             else:
                 response = f"{get_all_employees()}"
-                
+
 
         if resource == "locations":
             if id is not None:
@@ -77,23 +79,36 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any POST request.
 
     def do_POST(self):
-        """Handles POST requests to the server
-        """
-        # Set response code to 'Created'
         self._set_headers(201)
-
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
-        response = f"received post request:<br>{post_body}"
-        self.wfile.write(response.encode())
 
-    # Here's a method on the class that overrides the parent's method.
-    # It handles any PUT request.
+        # Convert JSON string to a Python dictionary
+        post_body = json.loads(post_body)
 
-    def do_PUT(self):
-        """Handles PUT requests to the server
-        """
-        self.do_POST()
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Initialize new animal
+        new_animal = None
+        new_location = None
+        new_employee = None
+
+        # Add a new animal to the list. Don't worry about
+        # the orange squiggle, you'll define the create_animal
+        # function next.
+        if resource == "animals":
+            new_animal = create_animal(post_body)
+        if resource == "locations":
+            new_location = create_location(post_body)
+        if resource == "employees":
+            new_location = create_employee(post_body)
+
+        # Encode the new animal and send in response
+        self.wfile.write(f"{new_animal}".encode())
+        self.wfile.write(f"{new_location}".encode())
+        self.wfile.write(f"{new_employee}".encode())
+
 
     def parse_url(self, path):
         '''something'''

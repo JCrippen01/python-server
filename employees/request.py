@@ -214,3 +214,23 @@ def get_single_employee(id):
             requested_employee = employee
 
     return requested_employee
+
+def create_employee(employee):
+    '''Apends the Animals List: Next, in the employees/request.py module,
+     put the following function in to take the new dictionary
+     representation sent my the client and append it to the EMPLOYEES
+     list.'''
+    # Get the id value of the last employee in the list
+    max_id = EMPLOYEES[-1]["id"]
+
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+
+    # Add an `id` property to the employee dictionary
+    employee["id"] = new_id
+
+    # Add the employee dictionary to the list
+    EMPLOYEES.append(employee)
+
+    # Return the dictionary with `id` property added
+    return employee

@@ -30,3 +30,23 @@ def get_single_location(id):
             requested_location = location
 
     return requested_location
+
+def create_location(location):
+    '''Apends the Animals List: Next, in the locations/request.py module,
+     put the following function in to take the new dictionary
+     representation sent my the client and append it to the LOCATIONS
+     list.'''
+    # Get the id value of the last location in the list
+    max_id = LOCATIONS[-1]["id"]
+
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+
+    # Add an `id` property to the location dictionary
+    location["id"] = new_id
+
+    # Add the location dictionary to the list
+    LOCATIONS.append(location)
+
+    # Return the dictionary with `id` property added
+    return location
