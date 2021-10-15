@@ -1,9 +1,9 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from animals import get_all_animals, get_single_animal, create_animal
-from employees import get_all_employees, get_single_employee
-from employees.request import create_employee
-from locations.request import create_location, get_all_locations, get_single_location
+from animals import get_all_animals, get_single_animal, create_animal, delete_animal, update_animal
+from employees import get_all_employees, get_single_employee, create_employee, delete_employee, update_employee
+from locations import create_location, get_all_locations, get_single_location, delete_location, update_location
+from customers import create_customer, get_all_customers, get_single_customer, delete_customer, update_customer
 
 
 # Here's a class. It inherits from another class.
@@ -56,22 +56,22 @@ class HandleRequests(BaseHTTPRequestHandler):
             if id is not None:
                 response = f"{get_single_animal(id)}"
             else:
-                response = f"{get_all_animals()}"
-
-      
-
-        if resource == "employees":
+                response = f"{get_all_animals()}"   
+        elif resource == "employees":
             if id is not None:
                 response = f"{get_single_employee(id)}"
             else:
                 response = f"{get_all_employees()}"
-
-
-        if resource == "locations":
+        elif resource == "locations":
             if id is not None:
                 response = f"{get_single_location(id)}"
             else:
                 response = f"{get_all_locations()}"
+        elif resource == "customers":
+            if id is not None:
+                response = f"{get_single_customer(id)}"
+            else:
+                response = f"{get_all_customers()}"
 
         self.wfile.write(response.encode())
 
@@ -90,24 +90,28 @@ class HandleRequests(BaseHTTPRequestHandler):
         (resource, id) = self.parse_url(self.path)
 
         # Initialize new animal
-        new_animal = None
-        new_location = None
-        new_employee = None
-
+        new__response = None
+        
         # Add a new animal to the list. Don't worry about
         # the orange squiggle, you'll define the create_animal
         # function next.
         if resource == "animals":
-            new_animal = create_animal(post_body)
-        if resource == "locations":
-            new_location = create_location(post_body)
-        if resource == "employees":
-            new_location = create_employee(post_body)
+            new__response = create_animal(post_body)
+            
+        elif resource == "locations":
+            new__response = create_location(post_body)
+            
+        elif resource == "employees":
+            new__response = create_employee(post_body)
+            
+        elif resource == "customers":
+            new__response = create_customer(post_body)
+            
+
+        self.wfile.write(f"{new__response}".encode())
 
         # Encode the new animal and send in response
-        self.wfile.write(f"{new_animal}".encode())
-        self.wfile.write(f"{new_location}".encode())
-        self.wfile.write(f"{new_employee}".encode())
+       
 
 
     def parse_url(self, path):
@@ -131,6 +135,49 @@ class HandleRequests(BaseHTTPRequestHandler):
             pass  # Request had trailing slash: /animals/
 
         return (resource, id)  # This is a tuple
+
+    def do_DELETE(self):
+    # Set a 204 response code
+        self._set_headers(204)
+
+    # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+    # Delete a single animal from the list    
+        if resource == "animals":
+            delete_animal(id)
+        elif resource == "employees":
+            delete_employee(id)
+        elif resource == "locations":
+            delete_location(id)
+        elif resource == "customers":
+            delete_customer(id)
+
+    # Encode the new animal and send in response
+        self.wfile.write("".encode())
+
+    def do_PUT(self):
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+    # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+    # Delete a single animal from the list
+        if resource == "animals":
+            update_animal(id, post_body)
+        elif resource == "customers":
+            update_customer(id, post_body)
+        elif resource == "employees":
+            update_employee(id, post_body)
+        elif resource == "locations":
+            update_location(id, post_body)
+
+
+    # Encode the new animal and send in response
+        self.wfile.write("".encode())
 
 
 # This function is not inside the class. It is the starting
