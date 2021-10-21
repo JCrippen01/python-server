@@ -48,7 +48,6 @@ class HandleRequests(BaseHTTPRequestHandler):
         '''stuff'''
         self._set_headers(200)
         response = {}  # Default response
-
         # Parse the URL and capture the tuple that is returned
         (resource, id) = self.parse_url(self.path)
 
